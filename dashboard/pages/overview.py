@@ -1,5 +1,3 @@
-import pandas as pd
-from sqlalchemy import create_engine
 from dash import register_page, html
 
 register_page(
@@ -8,40 +6,16 @@ register_page(
     name="Overview"
 )
 
-# Database connection
-engine = create_engine(
-    "postgresql+psycopg://postgres:1234@localhost:5432/gobike_db"
-)
 
-# Load data
-df = pd.read_sql(
-    "SELECT * FROM gobike.dashboard_trips",
-    engine
-)
-
-# Calculate KPIs
-total_trips = len(df)
-
-total_users = df["user_id"].nunique()
-
-average_duration = round(
-    df["duration_sec"].mean() / 60,
-    2
-)
-
-total_stations = pd.concat(
-    [
-        df["start_station_id"],
-        df["end_station_id"]
-    ]
-).nunique()
-
-
-def create_kpi_card(title, value):
+def create_kpi_card(title, component_id):
     return html.Div(
         children=[
             html.H4(title, className="kpi-title"),
-            html.H2(value, className="kpi-value")
+            html.H2(
+                id=component_id,
+                children="Loading...",
+                className="kpi-value"
+            )
         ],
         className="kpi-card"
     )
@@ -58,22 +32,22 @@ layout = html.Div(
             children=[
                 create_kpi_card(
                     "Total Trips",
-                    f"{total_trips:,}"
+                    "total-trips-kpi"
                 ),
 
                 create_kpi_card(
                     "Total Users",
-                    f"{total_users:,}"
+                    "total-users-kpi"
                 ),
 
                 create_kpi_card(
                     "Average Trip Duration",
-                    f"{average_duration} min"
+                    "average-duration-kpi"
                 ),
 
                 create_kpi_card(
                     "Total Stations",
-                    f"{total_stations:,}"
+                    "total-stations-kpi"
                 )
             ],
             className="kpi-container"
