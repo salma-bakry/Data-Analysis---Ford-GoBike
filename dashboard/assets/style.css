@@ -1,0 +1,189 @@
+/* ==========================================
+   GENERAL PAGE SETTINGS
+   ========================================== */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f7f9fc;
+}
+
+/* ==========================================
+   TOP NAVIGATION BAR
+   ========================================== */
+
+.navbar {
+  height: 70px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.brand {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1f4e79;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-button {
+  text-decoration: none;
+  color: #333333;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.nav-button:hover {
+  background-color: #e8f1f8;
+  color: #1f4e79;
+}
+
+/* ==========================================
+   LEFT SIDEBAR
+   ========================================== */
+
+.sidebar {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  bottom: 0;
+  width: 230px;
+  padding: 25px 20px;
+  background-color: #ffffff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.sidebar-title {
+  color: #1f4e79;
+  margin-top: 0;
+}
+
+.filter-label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ==========================================
+   MAIN CONTENT
+   ========================================== */
+
+.main-content {
+  margin-left: 230px;
+  padding-top: 100px;
+  min-height: 100vh;
+}
+
+.main-title {
+  text-align: center;
+  color: #1f4e79;
+  margin-bottom: 30px;
+}
+
+.page-content {
+  padding: 0 30px 40px 30px;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 900px) {
+  .navbar {
+    padding: 0 15px;
+  }
+
+  .nav-buttons {
+    gap: 4px;
+  }
+
+  .nav-button {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .sidebar {
+    width: 190px;
+  }
+
+  .main-content {
+    margin-left: 190px;
+  }
+}
+
+.page-heading {
+  color: #1f4e79;
+  margin-bottom: 25px;
+}
+
+.kpi-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.kpi-card {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.kpi-title {
+  color: #64748b;
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+
+.kpi-value {
+  color: #1f4e79;
+  font-size: 28px;
+  margin: 0;
+}
+
+@media (max-width: 1100px) {
+  .kpi-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .kpi-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.charts-container .dash-graph {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 10px;
+}
+
+@media (max-width: 1000px) {
+    .charts-container {
+        grid-template-columns: 1fr;
+    }
+}
