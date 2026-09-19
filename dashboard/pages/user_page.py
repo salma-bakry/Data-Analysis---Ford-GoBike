@@ -10,22 +10,13 @@ from user_analysis import (
     create_user_type_age_group_chart
 )
 
-
-# ==========================================
-# REGISTER PAGE
-# ==========================================
-
 register_page(
     __name__,
     path="/user-analysis",
     name="User Analysis"
 )
 
-
-# ==========================================
 # PAGE LAYOUT
-# ==========================================
-
 layout = html.Div(
     children=[
         html.H2(
@@ -50,11 +41,7 @@ layout = html.Div(
     ]
 )
 
-
-# ==========================================
 # UPDATE CHARTS
-# ==========================================
-
 @callback(
     Output("user-type-chart", "figure"),
     Output("gender-distribution-chart", "figure"),

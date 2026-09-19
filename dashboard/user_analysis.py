@@ -2,32 +2,20 @@ import pandas as pd
 import plotly.express as px
 from sqlalchemy import create_engine
 
-
-# ==========================================
-# 1. DATABASE CONNECTION
-# ==========================================
+#  DATABASE CONNECTION
 
 engine = create_engine(
     "postgresql+psycopg://postgres:1234@localhost:5432/gobike_db"
 )
-
-
-# ==========================================
-# 2. LOAD DATA FROM POSTGRESQL
-# ==========================================
+# LOAD DATA FROM POSTGRESQL
 
 query = """
 SELECT *
 FROM gobike.dashboard_trips
 """
-
 df = pd.read_sql(query, engine)
 
-
-# ==========================================
-# 3. DATA PREPARATION
-# ==========================================
-
+#  DATA PREPARATION
 # Create age groups
 def create_age_group(age):
     if pd.isna(age):
@@ -60,10 +48,7 @@ age_order = [
     "Unknown"
 ]
 
-
-# ==========================================
-# 4. CHART 1: USER TYPE DISTRIBUTION
-# ==========================================
+#  CHART 1: USER TYPE DISTRIBUTION
 
 def create_user_type_chart(df):
 
@@ -88,6 +73,16 @@ def create_user_type_chart(df):
 
     fig.update_traces(
         textinfo="percent+label",
+         marker_colors=[
+        "#fbb4ae",
+        "#b3cde3",
+        "#ccebc5",
+        "#decbe4",
+        "#fed9a6",
+        "#ffffcc",
+        "#e5d8bd",
+        "#fddaec"
+    ],
         hovertemplate=(
             "<b>%{label}</b><br>"
             "Trips: %{value}<br>"
@@ -97,11 +92,7 @@ def create_user_type_chart(df):
     )
 
     return fig
-
-
-# ==========================================
-# 5. CHART 2: GENDER DISTRIBUTION
-# ==========================================
+#  CHART 2: GENDER DISTRIBUTION
 
 def create_gender_distribution_chart(df):
 
@@ -125,24 +116,26 @@ def create_gender_distribution_chart(df):
             "gender": "Gender",
             "trip_count": "Number of Trips"
         },
-        text="trip_count"
+        text="trip_count",
+        color="gender", 
+        color_discrete_sequence=[ "#b3cde3",
+        "#fbb4ae"] ,#blue and pink
     )
 
     fig.update_traces(
-        textposition="outside"
+        textposition="outside",
+        
     )
 
     fig.update_layout(
         xaxis_title="Gender",
-        yaxis_title="Number of Trips"
+        yaxis_title="Number of Trips",
+        showlegend=False
     )
 
     return fig
 
-
-# ==========================================
-# 6. CHART 3: AGE GROUP DISTRIBUTION
-# ==========================================
+#  CHART 3: AGE GROUP DISTRIBUTION
 
 def create_age_group_chart(df):
 
@@ -167,7 +160,9 @@ def create_age_group_chart(df):
             "age_group": "Age Group",
             "trip_count": "Number of Trips"
         },
-        text="trip_count"
+        text="trip_count",
+        color="age_group", color_discrete_sequence=[ "#b3cde3", 
+         "#ccebc5",  "#decbe4", "#fed9a6", "#fbb4ae"  ]
     )
 
     fig.update_traces(
@@ -181,10 +176,7 @@ def create_age_group_chart(df):
 
     return fig
 
-
-# ==========================================
-# 7. CHART 4: USER TYPE BY GENDER
-# ==========================================
+# CHART 4: USER TYPE BY GENDER
 
 def create_user_type_gender_chart(df):
 
@@ -214,7 +206,12 @@ def create_user_type_gender_chart(df):
             "trip_count": "Number of Trips",
             "user_type": "User Type"
         },
-        text="trip_count"
+        text="trip_count",
+        color_discrete_sequence=[
+            "#b3cde3",  #blue
+            "#decbe4",  #purple
+            "#ccebc5"   #green
+        ]
     )
 
     fig.update_traces(
@@ -228,10 +225,8 @@ def create_user_type_gender_chart(df):
 
     return fig
 
+# CHART 5: USER TYPE BY AGE GROUP
 
-# ==========================================
-# 8. CHART 5: USER TYPE BY AGE GROUP
-# ==========================================
 
 def create_user_type_age_group_chart(df):
 
@@ -271,7 +266,12 @@ def create_user_type_age_group_chart(df):
             "trip_count": "Number of Trips",
             "user_type": "User Type"
         },
-        text="trip_count"
+        text="trip_count",
+        color_discrete_sequence=[
+            "#b3cde3",  # pastel blue
+            "#decbe4",  # pastel purple
+            "#ccebc5"   # pastel green
+        ]
     )
 
     fig.update_traces(
@@ -285,10 +285,7 @@ def create_user_type_age_group_chart(df):
 
     return fig
 
-
-# ==========================================
-# 9. TEST ALL CHART FUNCTIONS
-# ==========================================
+# TEST ALL CHART FUNCTIONS
 
 if __name__ == "__main__":
 

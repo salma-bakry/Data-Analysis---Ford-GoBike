@@ -15,22 +15,13 @@ from time_analysis import create_trips_by_day_chart
 from user_analysis import create_user_type_chart
 from station_trip_analysis import create_top_start_stations_chart
 
-
-# --------------------------------------------------
 # Create Dash application
-# --------------------------------------------------
-
 app = Dash(
     __name__,
     use_pages=True,
     suppress_callback_exceptions=True
 )
-
-
-# --------------------------------------------------
 # Navbar
-# --------------------------------------------------
-
 navbar = html.Nav(
     className="navbar",
     children=[
@@ -70,11 +61,7 @@ navbar = html.Nav(
     ]
 )
 
-
-# --------------------------------------------------
 # Sidebar filters
-# --------------------------------------------------
-
 sidebar = html.Aside(
     className="sidebar",
     children=[
@@ -253,11 +240,7 @@ sidebar = html.Aside(
     ]
 )
 
-
-# --------------------------------------------------
 # Main application layout
-# --------------------------------------------------
-
 app.layout = html.Div(
     [
         navbar,
@@ -280,12 +263,7 @@ app.layout = html.Div(
         ),
     ]
 )
-
-
-# --------------------------------------------------
 # Overview KPIs and charts callback
-# --------------------------------------------------
-
 @app.callback(
     [
         Output("total-trips-kpi", "children"),
@@ -324,11 +302,7 @@ def update_overview(
         age_groups,
         duration_range
     )
-
-    # --------------------------------------------------
     # Calculate KPIs
-    # --------------------------------------------------
-
     total_trips = len(filtered_df)
 
     total_users = filtered_df["user_id"].nunique()
@@ -370,10 +344,7 @@ def update_overview(
 
     total_stations_display = f"{unique_stations:,}"
 
-    # --------------------------------------------------
     # Create overview charts
-    # --------------------------------------------------
-
     # Chart 1: Trips by day
     if len(filtered_df) > 0:
         trips_by_day_figure = create_trips_by_day_chart(
@@ -461,9 +432,6 @@ def update_overview(
     )
 
 
-# --------------------------------------------------
 # Run application
-# --------------------------------------------------
-
 if __name__ == "__main__":
     app.run(debug=True)

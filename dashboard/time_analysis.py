@@ -2,19 +2,14 @@ import pandas as pd
 import plotly.express as px
 from sqlalchemy import create_engine
 
-
-# ==========================================
-# 1. DATABASE CONNECTION
-# ==========================================
+#  DATABASE CONNECTION
 
 engine = create_engine(
     "postgresql+psycopg://postgres:1234@localhost:5432/gobike_db"
 )
 
 
-# ==========================================
-# 2. LOAD DATA FROM POSTGRESQL
-# ==========================================
+#  LOAD DATA FROM POSTGRESQL
 
 query = """
 SELECT *
@@ -23,12 +18,9 @@ FROM gobike.dashboard_trips
 
 df = pd.read_sql(query, engine)
 
-
-# ==========================================
-# 3. DATA PREPARATION
-# ==========================================
-
+# DATA PREPARATION
 # Reconstruct the original duration in minutes
+
 df["duration_min_original"] = df["duration_sec"] / 60
 
 # Remove the influence of extreme duration values
@@ -52,10 +44,7 @@ df["day_type"] = df["weekend"].map(
 )
 
 
-# ==========================================
-# 4. CHART 1: TRIPS BY DAY OF WEEK
-# ==========================================
-
+# CHART 1: TRIPS BY DAY OF WEEK
 def create_trips_by_day_chart(df):
 
     day_order = [
@@ -89,7 +78,17 @@ def create_trips_by_day_chart(df):
             "day_of_week": "Day of Week",
             "trip_count": "Number of Trips"
         },
-        text="trip_count"
+        text="trip_count",
+        color="day_of_week",
+        color_discrete_sequence=[
+            "#b3cde3",  # blue
+            "#ccebc5",  # green
+            "#decbe4",  # purple
+            "#fed9a6",  # orange
+            "#fbb4ae",  # pink
+            "#e5d8bd",  # beige
+            "#fddaec"   # pink
+        ]
     )
 
     fig.update_traces(
@@ -98,15 +97,13 @@ def create_trips_by_day_chart(df):
 
     fig.update_layout(
         xaxis_title="Day of Week",
-        yaxis_title="Number of Trips"
+        yaxis_title="Number of Trips",
+        showlegend=False
     )
 
     return fig
 
-
-# ==========================================
-# 5. CHART 2: TRIPS BY HOUR OF DAY
-# ==========================================
+# CHART 2: TRIPS BY HOUR OF DAY
 
 def create_trips_by_hour_chart(df):
 
@@ -134,6 +131,11 @@ def create_trips_by_hour_chart(df):
         }
     )
 
+    fig.update_traces(
+        line=dict(color="#fbb4ae"),
+        marker=dict(color="#decbe4")
+    )
+
     fig.update_layout(
         xaxis=dict(
             tickmode="linear",
@@ -145,10 +147,8 @@ def create_trips_by_hour_chart(df):
 
     return fig
 
+#  CHART 3: WEEKDAY VS WEEKEND TRIPS
 
-# ==========================================
-# 6. CHART 3: WEEKDAY VS WEEKEND TRIPS
-# ==========================================
 
 def create_weekday_weekend_chart(df):
 
@@ -169,7 +169,12 @@ def create_weekday_weekend_chart(df):
         names="day_type",
         values="trip_count",
         title="Weekday vs. Weekend Trips",
-        hole=0.4
+        hole=0.4,
+        color="day_type",
+        color_discrete_map={
+            "Weekday": "#b3cde3",
+            "Weekend": "#fbb4ae"
+        }
     )
 
     fig.update_traces(
@@ -184,10 +189,7 @@ def create_weekday_weekend_chart(df):
 
     return fig
 
-
-# ==========================================
-# 7. CHART 4: TRIP DURATION BY DAY OF WEEK
-# ==========================================
+#  CHART 4: TRIP DURATION BY DAY OF WEEK
 
 def create_duration_by_day_chart(df):
 
@@ -213,20 +215,28 @@ def create_duration_by_day_chart(df):
             "day_of_week": "Day of Week",
             "duration_min_clean": "Trip Duration (Minutes)"
         },
-        points=False
+        points=False,
+        color="day_of_week",
+        color_discrete_sequence=[
+            "#b3cde3",
+            "#ccebc5",
+            "#decbe4",
+            "#fed9a6",
+            "#fbb4ae",
+            "#e5d8bd",
+            "#fddaec"
+        ]
     )
 
     fig.update_layout(
         xaxis_title="Day of Week",
-        yaxis_title="Trip Duration (Minutes)"
+        yaxis_title="Trip Duration (Minutes)",
+        showlegend=False
     )
 
     return fig
 
-
-# ==========================================
-# 8. CHART 5: AVERAGE TRIP DURATION BY HOUR
-# ==========================================
+#  CHART 5: AVERAGE TRIP DURATION BY HOUR
 
 def create_average_duration_by_hour_chart(df):
 
@@ -253,6 +263,11 @@ def create_average_duration_by_hour_chart(df):
         }
     )
 
+    fig.update_traces(
+        line=dict(color="#fbb4ae"),
+        marker=dict(color="#decbe4")
+    )
+
     fig.update_layout(
         xaxis=dict(
             tickmode="linear",
@@ -264,10 +279,7 @@ def create_average_duration_by_hour_chart(df):
 
     return fig
 
-
-# ==========================================
-# 9. CHART 6: TRIP DURATION: WEEKDAY VS WEEKEND
-# ==========================================
+# CHART 6: TRIP DURATION: WEEKDAY VS WEEKEND
 
 def create_average_duration_by_day_type_chart(df):
 
@@ -293,7 +305,12 @@ def create_average_duration_by_day_type_chart(df):
             "day_type": "Day Type",
             "average_duration": "Average Duration (Minutes)"
         },
-        text="average_duration"
+        text="average_duration",
+        color="day_type",
+        color_discrete_map={
+            "Weekday": "#b3cde3",
+            "Weekend": "#fbb4ae"
+        }
     )
 
     fig.update_traces(
@@ -303,15 +320,12 @@ def create_average_duration_by_day_type_chart(df):
 
     fig.update_layout(
         xaxis_title="Day Type",
-        yaxis_title="Average Duration (Minutes)"
+        yaxis_title="Average Duration (Minutes)",
+        showlegend=False
     )
 
     return fig
-
-
-# ==========================================
-# 10. CHART 7: TRIP VOLUME BY DAY AND HOUR
-# ==========================================
+#  CHART 7: TRIP VOLUME BY DAY AND HOUR
 
 def create_day_hour_heatmap(df):
 
@@ -365,10 +379,7 @@ def create_day_hour_heatmap(df):
 
     return fig
 
-
-# ==========================================
-# 11. CHART 8: AVERAGE DURATION BY HOUR SPLIT BY USER TYPE
-# ==========================================
+#  CHART 8: AVERAGE DURATION BY HOUR SPLIT BY USER TYPE
 
 def create_duration_by_hour_user_type_chart(df):
 
@@ -393,6 +404,11 @@ def create_duration_by_hour_user_type_chart(df):
         x="hour",
         y="average_duration",
         color="user_type",
+        color_discrete_sequence=[
+            "#b3cde3",
+            "#fbb4ae",
+            "#ccebc5"
+        ],
         markers=True,
         title="Average Trip Duration by Hour and User Type",
         labels={
@@ -414,9 +430,7 @@ def create_duration_by_hour_user_type_chart(df):
     return fig
 
 
-# ==========================================
-# 12. TEST ALL CHART FUNCTIONS
-# ==========================================
+# TEST ALL CHART FUNCTIONs
 
 if __name__ == "__main__":
 

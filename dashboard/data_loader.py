@@ -1,30 +1,16 @@
 import pandas as pd
 from sqlalchemy import create_engine
 
-
-# ==========================================
 # DATABASE CONNECTION
-# ==========================================
-
 engine = create_engine(
     "postgresql+psycopg://postgres:1234@localhost:5432/gobike_db"
 )
-
-
-# ==========================================
 # LOAD DATA
-# ==========================================
-
 df = pd.read_sql(
     "SELECT * FROM gobike.dashboard_trips",
     engine
 )
-
-
-# ==========================================
 # DATA PREPARATION
-# ==========================================
-
 # Convert date column
 df["date"] = pd.to_datetime(df["date"])
 
@@ -71,12 +57,7 @@ df["day_type"] = df["weekend"].map(
         False: "Weekday"
     }
 )
-
-
-# ==========================================
 # FILTER FUNCTION
-# ==========================================
-
 def filter_data(
     data,
     start_date,

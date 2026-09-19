@@ -21,11 +21,7 @@ register_page(
     name="Time Analysis"
 )
 
-
-# ==========================================
 # PAGE LAYOUT
-# ==========================================
-
 layout = html.Div(
     children=[
         html.H2(
@@ -49,11 +45,7 @@ layout = html.Div(
     ]
 )
 
-
-# ==========================================
 # UPDATE CHARTS WHEN FILTERS CHANGE
-# ==========================================
-
 @callback(
     Output("trips-by-day-chart", "figure"),
     Output("trips-by-hour-chart", "figure"),

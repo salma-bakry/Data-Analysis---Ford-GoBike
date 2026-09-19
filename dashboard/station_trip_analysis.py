@@ -3,20 +3,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sqlalchemy import create_engine
 
-
-# ==========================================
-# 1. DATABASE CONNECTION
-# ==========================================
-
+#  DATABASE CONNECTION
 engine = create_engine(
     "postgresql+psycopg://postgres:1234@localhost:5432/gobike_db"
 )
 
-
-# ==========================================
-# 2. LOAD DATA FROM POSTGRESQL
-# ==========================================
-
+# LOAD DATA FROM POSTGRESQL
 query = """
 SELECT *
 FROM gobike.dashboard_trips
@@ -24,11 +16,7 @@ FROM gobike.dashboard_trips
 
 df = pd.read_sql(query, engine)
 
-
-# ==========================================
-# 3. CHECK REQUIRED COLUMNS
-# ==========================================
-
+#  CHECK REQUIRED COLUMNS
 required_columns = [
     "start_station_name",
     "end_station_name",
@@ -48,11 +36,7 @@ if missing_columns:
         f"Missing columns in gobike.dashboard_trips: {missing_columns}"
     )
 
-
-# ==========================================
 # 4. DATA PREPARATION
-# ==========================================
-
 station_df = df.dropna(
     subset=[
         "start_station_name",
@@ -72,10 +56,7 @@ station_df["trip_route"] = (
     + station_df["end_station_name"]
 )
 
-
-# ==========================================
-# 5. CHART 1: TOP START STATIONS
-# ==========================================
+#  CHART 1: TOP START STATIONS
 
 def create_top_start_stations_chart(df, top_n=10):
 
@@ -102,7 +83,8 @@ def create_top_start_stations_chart(df, top_n=10):
             "station": "Start Station",
             "trip_count": "Number of Trips"
         },
-        text="trip_count"
+        text="trip_count",
+        color_discrete_sequence=["#decbe4"]
     )
 
     fig.update_traces(
@@ -117,9 +99,8 @@ def create_top_start_stations_chart(df, top_n=10):
     return fig
 
 
-# ==========================================
-# 6. CHART 2: TOP END STATIONS
-# ==========================================
+
+# CHART 2: TOP END STATIONS
 
 def create_top_end_stations_chart(df, top_n=10):
 
@@ -146,7 +127,8 @@ def create_top_end_stations_chart(df, top_n=10):
             "station": "End Station",
             "trip_count": "Number of Trips"
         },
-        text="trip_count"
+        text="trip_count",
+        color_discrete_sequence=["#b3cde3"]
     )
 
     fig.update_traces(
@@ -160,10 +142,7 @@ def create_top_end_stations_chart(df, top_n=10):
 
     return fig
 
-
-# ==========================================
-# 7. CHART 3: MOST COMMON TRIP ROUTES
-# ==========================================
+#  CHART 3: MOST COMMON TRIP ROUTES
 
 def create_top_routes_chart(df, top_n=15):
 
@@ -190,7 +169,8 @@ def create_top_routes_chart(df, top_n=15):
             "route": "Trip Route",
             "trip_count": "Number of Trips"
         },
-        text="trip_count"
+        text="trip_count",
+        color_discrete_sequence=["#fbb4ae"]
     )
 
     fig.update_traces(
@@ -204,91 +184,84 @@ def create_top_routes_chart(df, top_n=15):
     )
 
     return fig
+# CHART 4: STATION ACTIVITY
 
-
-# ==========================================
-# 8. CHART 4: STATION ACTIVITY
-# ==========================================
-
-def create_station_activity_chart(df, top_n=15):
-
-    starts = (
-        df["start_station_name"]
-        .value_counts()
-        .rename("start_trips")
-    )
-
-    ends = (
-        df["end_station_name"]
-        .value_counts()
-        .rename("end_trips")
-    )
-
-    station_activity = pd.concat(
-        [starts, ends],
-        axis=1
-    ).fillna(0)
-
-    station_activity["total_trips"] = (
-        station_activity["start_trips"]
-        + station_activity["end_trips"]
-    )
-
-    station_activity = (
-        station_activity
-        .sort_values(
-            "total_trips",
-            ascending=False
-        )
-        .head(top_n)
-        .sort_values(
-            "total_trips",
-            ascending=True
-        )
-        .reset_index()
-    )
-
-    station_activity = station_activity.rename(
-        columns={
-            "index": "station"
-        }
-    )
-
-    fig = px.bar(
-        station_activity,
-        x=[
-            "start_trips",
-            "end_trips"
-        ],
-        y="station",
-        orientation="h",
-        barmode="group",
-        title=f"Top {top_n} Stations by Total Activity",
-        labels={
-            "value": "Number of Trips",
-            "station": "Station",
-            "variable": "Trip Type"
-        }
-    )
-
-    fig.update_layout(
-        xaxis_title="Number of Trips",
-        yaxis_title="Station"
-    )
-
+def create_station_activity_chart(df, top_n=15): 
+ 
+    starts = ( 
+        df["start_station_name"] 
+        .value_counts() 
+        .rename("start_trips") 
+    ) 
+ 
+    ends = ( 
+        df["end_station_name"] 
+        .value_counts() 
+        .rename("end_trips") 
+    ) 
+ 
+    station_activity = pd.concat( 
+        [starts, ends], 
+        axis=1 
+    ).fillna(0) 
+ 
+    station_activity["total_trips"] = ( 
+        station_activity["start_trips"] 
+        + station_activity["end_trips"] 
+    ) 
+ 
+    station_activity = ( 
+        station_activity 
+        .sort_values( 
+            "total_trips", 
+            ascending=False 
+        ) 
+        .head(top_n) 
+        .sort_values( 
+            "total_trips", 
+            ascending=True 
+        ) 
+        .reset_index() 
+    ) 
+ 
+    station_activity = station_activity.rename( 
+        columns={ 
+            "index": "station" 
+        } 
+    ) 
+ 
+    fig = px.bar( 
+        station_activity, 
+        x=[ 
+            "start_trips", 
+            "end_trips" 
+        ], 
+        y="station", 
+        orientation="h", 
+        barmode="group", 
+        title=f"Top {top_n} Stations by Total Activity", 
+        labels={ 
+            "value": "Number of Trips", 
+            "station": "Station", 
+            "variable": "Trip Type" 
+        },
+        color_discrete_sequence=[
+            "#b3cde3",
+            "#fbb4ae"
+        ]
+    ) 
+ 
+    fig.update_layout( 
+        xaxis_title="Number of Trips", 
+        yaxis_title="Station" 
+    ) 
     return fig
 
-
-# ==========================================
-# 9. MAP 1: STATION ACTIVITY MAP
-# ==========================================
+# MAP 1: STATION ACTIVITY MAP
 
 def create_station_map(df):
 
-    # --------------------------------------
     # Start station activity
-    # --------------------------------------
-
     starts = (
         df.groupby(
             [
@@ -309,11 +282,7 @@ def create_station_map(df):
         }
     )
 
-
-    # --------------------------------------
     # End station activity
-    # --------------------------------------
-
     ends = (
         df.groupby(
             [
@@ -333,12 +302,7 @@ def create_station_map(df):
             "end_longitude": "longitude"
         }
     )
-
-
-    # --------------------------------------
     # Combine start and end stations
-    # --------------------------------------
-
     station_activity = pd.concat(
         [
             starts[
@@ -360,12 +324,7 @@ def create_station_map(df):
         ],
         ignore_index=True
     )
-
-
-    # --------------------------------------
     # Combine duplicate stations
-    # --------------------------------------
-
     station_activity = (
         station_activity
         .groupby(
@@ -378,30 +337,16 @@ def create_station_map(df):
         )
         .sum()
     )
-
-
-    # --------------------------------------
     # Calculate total trips
-    # --------------------------------------
-
     station_activity["total_trips"] = (
         station_activity["start_trips"]
         + station_activity["end_trips"]
     )
-
-
-    # --------------------------------------
     # Calculate center of stations
-    # --------------------------------------
-
     center_lat = station_activity["latitude"].mean()
     center_lon = station_activity["longitude"].mean()
 
-
-    # --------------------------------------
     # Create map
-    # --------------------------------------
-
     fig = px.scatter_map(
         station_activity,
         lat="latitude",
@@ -424,11 +369,7 @@ def create_station_map(df):
         height=750,
         title="Station Activity Map"
     )
-
-
-    # --------------------------------------
     # Map style
-    # --------------------------------------
 
     fig.update_layout(
         map_style="open-street-map",
@@ -442,16 +383,11 @@ def create_station_map(df):
 
     return fig
 
-
-# ==========================================
 # 10. MAP 2: TOP TRIP ROUTES
-# ==========================================
 
 def create_route_map(df, top_n=30):
 
-    # --------------------------------------
     # Find most common routes
-    # --------------------------------------
 
     top_routes = (
         df["trip_route"]
@@ -464,23 +400,14 @@ def create_route_map(df, top_n=30):
         "trip_route",
         "trip_count"
     ]
-
-
-    # --------------------------------------
     # Keep only top routes
-    # --------------------------------------
-
     route_df = df.merge(
         top_routes,
         on="trip_route",
         how="inner"
     )
-
-
-    # --------------------------------------
     # Get coordinates for each route
-    # --------------------------------------
-
+    
     route_coordinates = (
         route_df[
             [
@@ -500,19 +427,10 @@ def create_route_map(df, top_n=30):
             ascending=False
         )
     )
-
-
-    # --------------------------------------
     # Create figure
-    # --------------------------------------
 
     fig = go.Figure()
-
-
-    # --------------------------------------
     # Draw routes
-    # --------------------------------------
-
     for _, row in route_coordinates.iterrows():
 
         fig.add_trace(
@@ -538,10 +456,7 @@ def create_route_map(df, top_n=30):
             )
         )
 
-
-    # --------------------------------------
     # Start station points
-    # --------------------------------------
 
     start_points = route_coordinates[
         [
@@ -550,12 +465,8 @@ def create_route_map(df, top_n=30):
             "start_longitude"
         ]
     ].drop_duplicates()
-
-
-    # --------------------------------------
     # End station points
-    # --------------------------------------
-
+    
     end_points = route_coordinates[
         [
             "end_station_name",
@@ -564,10 +475,7 @@ def create_route_map(df, top_n=30):
         ]
     ].drop_duplicates()
 
-
-    # --------------------------------------
     # Add start markers
-    # --------------------------------------
 
     fig.add_trace(
         go.Scattermap(
@@ -585,12 +493,8 @@ def create_route_map(df, top_n=30):
             name="Start Stations"
         )
     )
-
-
-    # --------------------------------------
     # Add end markers
-    # --------------------------------------
-
+    
     fig.add_trace(
         go.Scattermap(
             lat=end_points["end_latitude"],
@@ -608,11 +512,8 @@ def create_route_map(df, top_n=30):
         )
     )
 
-
-    # --------------------------------------
     # Calculate map center
-    # --------------------------------------
-
+    
     all_latitudes = pd.concat(
         [
             route_coordinates["start_latitude"],
@@ -631,12 +532,8 @@ def create_route_map(df, top_n=30):
 
     center_lat = all_latitudes.mean()
     center_lon = all_longitudes.mean()
-
-
-    # --------------------------------------
     # Map layout
-    # --------------------------------------
-
+    
     fig.update_layout(
         map=dict(
             style="open-street-map",
@@ -658,56 +555,23 @@ def create_route_map(df, top_n=30):
 
     return fig
 
-
-# ==========================================
-# 11. RUN ALL VISUALIZATIONS
-# ==========================================
-
+# RUN ALL VISUALIZATIONS
 if __name__ == "__main__":
-
-    # --------------------------------------
-    # Figure 1
-    # --------------------------------------
 
     fig1 = create_top_start_stations_chart(df)
     fig1.show()
 
-
-    # --------------------------------------
-    # Figure 2
-    # --------------------------------------
-
     fig2 = create_top_end_stations_chart(df)
     fig2.show()
-
-
-    # --------------------------------------
-    # Figure 3
-    # --------------------------------------
 
     fig3 = create_top_routes_chart(station_df)
     fig3.show()
 
-
-    # --------------------------------------
-    # Figure 4
-    # --------------------------------------
-
     fig4 = create_station_activity_chart(station_df)
     fig4.show()
 
-
-    # --------------------------------------
-    # Figure 5
-    # --------------------------------------
-
     fig5 = create_station_map(station_df)
     fig5.show()
-
-
-    # --------------------------------------
-    # Figure 6
-    # --------------------------------------
 
     fig6 = create_route_map(station_df)
     fig6.show()

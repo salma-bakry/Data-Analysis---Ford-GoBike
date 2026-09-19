@@ -10,23 +10,14 @@ from station_trip_analysis import (
     create_station_map,
     create_route_map
 )
-
-
-# ==========================================
 # REGISTER PAGE
-# ==========================================
-
 register_page(
     __name__,
     path="/station-analysis",
     name="Station Analysis"
 )
 
-
-# ==========================================
 # PREPARE STATION DATA
-# ==========================================
-
 def prepare_station_data(data):
     station_df = data.dropna(
         subset=[
@@ -47,11 +38,7 @@ def prepare_station_data(data):
 
     return station_df
 
-
-# ==========================================
 # PAGE LAYOUT
-# ==========================================
-
 layout = html.Div(
     children=[
         html.H2(
@@ -102,11 +89,7 @@ layout = html.Div(
     ]
 )
 
-
-# ==========================================
 # UPDATE STATION CHARTS
-# ==========================================
-
 @callback(
     Output("top-start-stations-chart", "figure"),
     Output("top-end-stations-chart", "figure"),
