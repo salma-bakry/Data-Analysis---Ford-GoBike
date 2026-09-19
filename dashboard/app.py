@@ -1,11 +1,25 @@
 import pandas as pd
 
-from dash import Dash, html, dcc, page_container, Input, Output
+from dash import (
+    Dash,
+    html,
+    dcc,
+    page_container,
+    Input,
+    Output,
+)
 
 from data_loader import df, filter_data
 
+from time_analysis import create_trips_by_day_chart
+from user_analysis import create_user_type_chart
+from station_trip_analysis import create_top_start_stations_chart
 
-# Create the Dash application
+
+# --------------------------------------------------
+# Create Dash application
+# --------------------------------------------------
+
 app = Dash(
     __name__,
     use_pages=True,
@@ -13,9 +27,9 @@ app = Dash(
 )
 
 
-# ==========================================
-# TOP NAVIGATION BAR
-# ==========================================
+# --------------------------------------------------
+# Navbar
+# --------------------------------------------------
 
 navbar = html.Nav(
     className="navbar",
@@ -50,16 +64,16 @@ navbar = html.Nav(
                     "Station Analysis",
                     href="/station-analysis",
                     className="nav-button"
-                )
+                ),
             ]
-        )
+        ),
     ]
 )
 
 
-# ==========================================
-# LEFT SIDEBAR
-# ==========================================
+# --------------------------------------------------
+# Sidebar filters
+# --------------------------------------------------
 
 sidebar = html.Aside(
     className="sidebar",
@@ -108,12 +122,20 @@ sidebar = html.Aside(
         dcc.Dropdown(
             id="user-type-filter",
             options=[
-                {"label": "Customer", "value": "Customer"},
-                {"label": "Subscriber", "value": "Subscriber"}
+                {
+                    "label": "Customer",
+                    "value": "Customer"
+                },
+                {
+                    "label": "Subscriber",
+                    "value": "Subscriber"
+                },
             ],
-            value=["Customer", "Subscriber"],
+            value=[
+                "Customer",
+                "Subscriber"
+            ],
             multi=True,
-            clearable=True,
             placeholder="Select user type"
         ),
 
@@ -128,13 +150,25 @@ sidebar = html.Aside(
         dcc.Dropdown(
             id="gender-filter",
             options=[
-                {"label": "Female", "value": "Female"},
-                {"label": "Male", "value": "Male"},
-                {"label": "Unknown", "value": "Unknown"}
+                {
+                    "label": "Female",
+                    "value": "Female"
+                },
+                {
+                    "label": "Male",
+                    "value": "Male"
+                },
+                {
+                    "label": "Unknown",
+                    "value": "Unknown"
+                },
             ],
-            value=["Female", "Male", "Unknown"],
+            value=[
+                "Female",
+                "Male",
+                "Unknown"
+            ],
             multi=True,
-            clearable=True,
             placeholder="Select gender"
         ),
 
@@ -149,13 +183,34 @@ sidebar = html.Aside(
         dcc.Checklist(
             id="age-group-filter",
             options=[
-                {"label": "Under 20", "value": "Under 20"},
-                {"label": "20-29", "value": "20-29"},
-                {"label": "30-39", "value": "30-39"},
-                {"label": "40-49", "value": "40-49"},
-                {"label": "50-59", "value": "50-59"},
-                {"label": "60+", "value": "60+"},
-                {"label": "Unknown", "value": "Unknown"}
+                {
+                    "label": "Under 20",
+                    "value": "Under 20"
+                },
+                {
+                    "label": "20-29",
+                    "value": "20-29"
+                },
+                {
+                    "label": "30-39",
+                    "value": "30-39"
+                },
+                {
+                    "label": "40-49",
+                    "value": "40-49"
+                },
+                {
+                    "label": "50-59",
+                    "value": "50-59"
+                },
+                {
+                    "label": "60+",
+                    "value": "60+"
+                },
+                {
+                    "label": "Unknown",
+                    "value": "Unknown"
+                },
             ],
             value=[
                 "Under 20",
@@ -165,14 +220,15 @@ sidebar = html.Aside(
                 "50-59",
                 "60+",
                 "Unknown"
-            ]
+            ],
+            inline=False
         ),
 
         html.Br(),
 
         # Duration
         html.Label(
-            "Duration (minutes)",
+            "Trip Duration (minutes)",
             className="filter-label"
         ),
 
@@ -193,17 +249,17 @@ sidebar = html.Aside(
                 "placement": "bottom",
                 "always_visible": False
             }
-        )
+        ),
     ]
 )
 
 
-# ==========================================
-# MAIN LAYOUT
-# ==========================================
+# --------------------------------------------------
+# Main application layout
+# --------------------------------------------------
 
 app.layout = html.Div(
-    children=[
+    [
         navbar,
 
         sidebar,
@@ -219,31 +275,38 @@ app.layout = html.Div(
                 html.Div(
                     page_container,
                     className="page-content"
-                )
+                ),
             ]
-        )
+        ),
     ]
 )
 
 
-# ==========================================
-# OVERVIEW KPI CALLBACK
-# ==========================================
+# --------------------------------------------------
+# Overview KPIs and charts callback
+# --------------------------------------------------
 
 @app.callback(
-    Output("total-trips-kpi", "children"),
-    Output("total-users-kpi", "children"),
-    Output("average-duration-kpi", "children"),
-    Output("total-stations-kpi", "children"),
+    [
+        Output("total-trips-kpi", "children"),
+        Output("total-users-kpi", "children"),
+        Output("average-duration-kpi", "children"),
+        Output("total-stations-kpi", "children"),
 
-    Input("start-date-filter", "date"),
-    Input("end-date-filter", "date"),
-    Input("user-type-filter", "value"),
-    Input("gender-filter", "value"),
-    Input("age-group-filter", "value"),
-    Input("duration-filter", "value")
+        Output("overview-trips-by-day", "figure"),
+        Output("overview-user-type", "figure"),
+        Output("overview-top-start-stations", "figure"),
+    ],
+    [
+        Input("start-date-filter", "date"),
+        Input("end-date-filter", "date"),
+        Input("user-type-filter", "value"),
+        Input("gender-filter", "value"),
+        Input("age-group-filter", "value"),
+        Input("duration-filter", "value"),
+    ]
 )
-def update_overview_kpis(
+def update_overview(
     start_date,
     end_date,
     user_types,
@@ -251,6 +314,7 @@ def update_overview_kpis(
     age_groups,
     duration_range
 ):
+    # Apply filters
     filtered_df = filter_data(
         df,
         start_date,
@@ -261,15 +325,15 @@ def update_overview_kpis(
         duration_range
     )
 
+    # --------------------------------------------------
+    # Calculate KPIs
+    # --------------------------------------------------
+
     total_trips = len(filtered_df)
 
-    total_users = (
-        filtered_df["user_id"].nunique()
-        if "user_id" in filtered_df.columns
-        else 0
-    )
+    total_users = filtered_df["user_id"].nunique()
 
-    if not filtered_df.empty:
+    if len(filtered_df) > 0:
         average_duration = (
             filtered_df["duration_sec"].mean() / 60
         )
@@ -279,27 +343,127 @@ def update_overview_kpis(
     station_columns = []
 
     if "start_station_id" in filtered_df.columns:
-        station_columns.append(filtered_df["start_station_id"])
+        station_columns.append("start_station_id")
 
     if "end_station_id" in filtered_df.columns:
-        station_columns.append(filtered_df["end_station_id"])
+        station_columns.append("end_station_id")
 
-    if station_columns:
-        total_stations = pd.concat(station_columns).nunique()
+    if station_columns and len(filtered_df) > 0:
+        unique_stations = pd.concat(
+            [
+                filtered_df[column]
+                for column in station_columns
+            ]
+        ).nunique()
+
     else:
-        total_stations = 0
+        unique_stations = 0
 
+    # Format KPI values
+    total_trips_display = f"{total_trips:,}"
+
+    total_users_display = f"{total_users:,}"
+
+    average_duration_display = (
+        f"{average_duration:.2f} min"
+    )
+
+    total_stations_display = f"{unique_stations:,}"
+
+    # --------------------------------------------------
+    # Create overview charts
+    # --------------------------------------------------
+
+    # Chart 1: Trips by day
+    if len(filtered_df) > 0:
+        trips_by_day_figure = create_trips_by_day_chart(
+            filtered_df
+        )
+    else:
+        trips_by_day_figure = {
+            "data": [],
+            "layout": {
+                "title": "No data available"
+            }
+        }
+
+    # Chart 2: User type distribution
+    if len(filtered_df) > 0:
+        user_type_figure = create_user_type_chart(
+            filtered_df
+        )
+    else:
+        user_type_figure = {
+            "data": [],
+            "layout": {
+                "title": "No data available"
+            }
+        }
+
+    # Chart 3: Top starting stations
+    station_df = filtered_df.dropna(
+        subset=["start_station_name"]
+    ).copy()
+
+    if len(station_df) > 0:
+        top_start_stations_figure = (
+            create_top_start_stations_chart(station_df)
+        )
+    else:
+        top_start_stations_figure = {
+            "data": [],
+            "layout": {
+                "title": "No data available"
+            }
+        }
+
+    # Make overview charts smaller
+    trips_by_day_figure.update_layout(
+        height=350,
+        margin=dict(
+            l=30,
+            r=20,
+            t=50,
+            b=40
+        )
+    )
+
+    user_type_figure.update_layout(
+        height=350,
+        margin=dict(
+            l=30,
+            r=20,
+            t=50,
+            b=40
+        )
+    )
+
+    top_start_stations_figure.update_layout(
+        height=350,
+        margin=dict(
+            l=30,
+            r=20,
+            t=50,
+            b=40
+        )
+    )
+
+    # Return KPIs and charts
     return (
-        f"{total_trips:,}",
-        f"{total_users:,}",
-        f"{average_duration:.2f} min",
-        f"{total_stations:,}"
+        total_trips_display,
+        total_users_display,
+        average_duration_display,
+        total_stations_display,
+
+        trips_by_day_figure,
+        user_type_figure,
+        top_start_stations_figure,
     )
 
 
-# ==========================================
-# RUN THE APPLICATION
-# ==========================================
+# --------------------------------------------------
+# Run application
+# --------------------------------------------------
 
 if __name__ == "__main__":
     app.run(debug=True)

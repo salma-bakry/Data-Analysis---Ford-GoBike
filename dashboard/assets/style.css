@@ -187,3 +187,215 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* Station Analysis page only */
+.station-charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;
+}
+
+.station-charts-container .dash-graph {
+    width: 100%;
+    min-height: 550px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Station Analysis maps */
+.station-charts-container .station-map-frame {
+    width: 75%;
+    height: 450px;
+    margin: 0 auto 25px auto;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #d9e2ec;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.station-charts-container .station-map-frame .dash-graph {
+    width: 100%;
+    height: 100% !important;
+}
+
+.station-charts-container .station-map-frame .js-plotly-plot,
+.station-charts-container .station-map-frame .plot-container {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Overview description */
+.overview-description {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #e1e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    line-height: 1.7;
+}
+
+.overview-description h3 {
+    margin-top: 0;
+    color: #1f5f9c;
+}
+
+/* Overview section title */
+.overview-section-title {
+    margin-top: 35px;
+    margin-bottom: 20px;
+    color: #1f5f9c;
+}
+
+/* Three overview charts beside each other */
+.overview-charts-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+.overview-chart-card {
+    min-width: 0;
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #e1e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.overview-chart-card h4 {
+    text-align: center;
+    color: #1f5f9c;
+    margin-top: 0;
+}
+
+/* Responsive layout */
+@media (max-width: 1100px) {
+    .overview-charts-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   Overview Page
+========================================= */
+
+/* Description section */
+.overview-description {
+    margin-top: 30px;
+    padding: 22px 25px;
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #e1e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    line-height: 1.7;
+}
+
+.overview-description h3 {
+    margin-top: 0;
+    color: #1f5f9c;
+}
+
+/* Section title */
+.overview-section-title {
+    margin-top: 35px;
+    margin-bottom: 20px;
+    color: #1f5f9c;
+}
+
+/* Two charts in the first row */
+.overview-charts-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+/* Chart cards */
+.overview-chart-card {
+    min-width: 0;
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #e1e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+}
+
+.overview-chart-card h4 {
+    text-align: center;
+    color: #1f5f9c;
+    margin: 5px 0 10px 0;
+}
+
+/* Single chart on the second row */
+.overview-single-chart {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* =========================================
+   Improved KPI Cards
+========================================= */
+
+.kpi-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.kpi-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 145px;
+    padding: 20px 15px;
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #e1e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.kpi-title {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #52606d;
+}
+
+.kpi-value {
+    margin: 0;
+    font-size: 27px;
+    font-weight: 700;
+    color: #1f5f9c;
+    line-height: 1.2;
+}
+
+/* Responsive layout */
+@media (max-width: 1100px) {
+    .kpi-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 750px) {
+    .overview-charts-row {
+        grid-template-columns: 1fr;
+    }
+
+    .kpi-container {
+        grid-template-columns: 1fr;
+    }
+}
